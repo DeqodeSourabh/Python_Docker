@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../connect"
+		},
+		{
+			"path": "../../erc721python"
+		},
+		{
+			"path": ".."
+		}
+	],
+	"settings": {}
+}
