@@ -9,7 +9,7 @@ services:
 
     contracts_Container:
       build: /home/deq/Desktop/Projects/python_Docker/Docker_Container_2/
-      image: "dockerCompose/blocks:1.0"
+      image: "dockerCompose/contracts:2.0"
       container_name: "contracts_container2"
       ports:
             "8001:5432"
@@ -17,7 +17,7 @@ services:
 
     holders_Container:
       build: /home/deq/Desktop/Projects/python_Docker/Docker_Container_3/
-      image: "dockerCompose/blocks:1.0"
+      image: "dockerCompose/holders:3.0"
       container_name: "contracts_container3"
       ports:
             "6603:3306"
