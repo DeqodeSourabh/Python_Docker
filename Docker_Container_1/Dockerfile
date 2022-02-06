@@ -1,6 +1,8 @@
 #Deriving the latest base image
 FROM python:latest
 
+RUN pip install web3
+RUN pip install ray
 
 #Labels as key value pair
 LABEL Maintainer="sourabh.a1"
