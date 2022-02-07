@@ -41,16 +41,17 @@ def holdersEvent(_fromBlock, _toBlock,address):
         contract = web3.eth.contract(address=address,abi=abi)
     
         transferEvents = contract.events.Transfer.createFilter(fromBlock=_fromBlock, toBlock=_toBlock)
-        for i in range(len(transferEvents.get_all_entries())):
-            try:
+        try:
+            for i in range(len(transferEvents.get_all_entries())):
+            
                 token_id =transferEvents.get_all_entries()[i].args.tokenId
                 holder = transferEvents.get_all_entries()[i].args.to
-                print(holder)
-                mongo(token_id, holder)
+                print(holder, token_id)
+                mongo(token_id,holder)
                 
-            except eth_abi.exceptions.InsufficientDataBytes:
-                pass           
-    except asyncio.TimeoutError: 
+        except eth_abi.exceptions.InsufficientDataBytes:
+            pass           
+    except : 
         pass
 inspect_serializability(holdersEvent, name="contract")   
 
