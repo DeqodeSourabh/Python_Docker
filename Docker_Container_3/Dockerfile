@@ -2,7 +2,7 @@
 FROM python:latest
 
 RUN pip install web3
-RUN pip install ray
+RUN pip install -U ray
 
 
 #Labels as key value pair
