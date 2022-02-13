@@ -7,7 +7,7 @@ import os
 #from find_contracts import holdersContract
 from ray.util import inspect_serializability
 import pymongo
-
+import cluster_setup 
 
 infura_url= "wss://mainnet.infura.io/ws/v3/57d8e5ec16764a3e86ce18fc505e640e"
 web3 = Web3(Web3.WebsocketProvider(infura_url))
@@ -24,6 +24,7 @@ def mongo(contractAddress, block):
     'block': block
     }
     if blocksTable.find_one({'contractAddress': contractAddress}) == None:
+        print("inserted")
         blocksTable.insert_one(queryObject)
     
 
@@ -38,24 +39,34 @@ def fetchBlocks(block):
             contractAddress = web3.eth.getTransactionReceipt(tx_hash).to
             print(contractAddress)
             if contractAddress != None:
-               # mongo(contractAddress, block)
+                mongo(contractAddress, block)
                 print(contractAddress, block)
                 return contractAddress
         
 
 
 
-inspect_serializability(fetchBlocks, name="contract")
+#inspect_serializability(fetchBlocks, name="contract")
+def start():    
+    cluster_setup.start_node()
+    ray.init(address='auto', _redis_password='5241590000000000')
     
-ray.init()
-futures =[]
-latestBlock = web3.eth.get_block('latest').number
-print(latestBlock)
-block= latestBlock+1
-while block>=0:
-    block-=1
-    futures.append(fetchBlocks.remote(block))
-ray.get(futures)
+    cluster_setup.create_multiple_nodes()
+
+
+    print('''This cluster consists of
+    {} nodes in total
+    {} CPU resources in total
+'''.format(len(ray.nodes()), ray.cluster_resources()['CPU']))
+
+    futures =[]
+    latestBlock = web3.eth.get_block('latest').number
+    print(latestBlock)
+    block= latestBlock+1
+    while block>=0:
+        block-=1
+        futures.append(fetchBlocks.remote(block))
+    ray.get(futures)
        
 
-
+start()
