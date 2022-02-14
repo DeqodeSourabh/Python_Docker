@@ -1,17 +1,12 @@
 
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
-import asyncio
 import ray
-import os
-#from find_contracts import holdersContract
 from ray.util import inspect_serializability
 import pymongo
 import cluster_setup 
 
 infura_url= "wss://mainnet.infura.io/ws/v3/57d8e5ec16764a3e86ce18fc505e640e"
-web3 = Web3(Web3.WebsocketProvider(infura_url))
-web3.middleware_onion.inject(geth_poa_middleware, layer=0) 
 
 
 def mongo(contractAddress, block):
@@ -37,7 +32,7 @@ def fetchBlocks(block):
         blockInfo = web3.eth.get_block(block)
         for tx_hash in blockInfo.transactions:
             contractAddress = web3.eth.getTransactionReceipt(tx_hash).to
-            print(contractAddress)
+            #print(contractAddress)
             if contractAddress != None:
                 mongo(contractAddress, block)
                 print(contractAddress, block)
@@ -48,7 +43,10 @@ def fetchBlocks(block):
 
 #inspect_serializability(fetchBlocks, name="contract")
 
-def start():    
+def start():   
+    web3 = Web3(Web3.WebsocketProvider(infura_url))
+    web3.middleware_onion.inject(geth_poa_middleware, layer=0) 
+
     #This will start a Ray new node and automatically creates
     #the multiple workers in your cluster
     cluster_setup.start_node()
@@ -67,8 +65,6 @@ def start():
     block= latestBlock+1
     while block>=0:
         block-=1
-        futures.append(fetchBlocks.remote(block))
-    ray.get(futures)
-       
-
+        fetchBlocks.remote(block)
+          
 start()
