@@ -47,10 +47,12 @@ def fetchBlocks(block):
 
 
 #inspect_serializability(fetchBlocks, name="contract")
+
 def start():    
+    #This will start a Ray new node and automatically creates
+    #the multiple workers in your cluster
     cluster_setup.start_node()
     ray.init(address='auto', _redis_password='5241590000000000')
-    
     cluster_setup.create_multiple_nodes()
 
 
@@ -61,7 +63,7 @@ def start():
 
     futures =[]
     latestBlock = web3.eth.get_block('latest').number
-    print(latestBlock)
+    #print(latestBlock)
     block= latestBlock+1
     while block>=0:
         block-=1
