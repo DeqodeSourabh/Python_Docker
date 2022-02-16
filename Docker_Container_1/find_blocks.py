@@ -9,18 +9,16 @@ from memory_profiler import profile
 import gc
 
 
-def mongo(contractAddress, block):
-    connection_url = 'mongodb+srv://sourabh:sourabh@cluster0.il3sa.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
-    client = pymongo.MongoClient(connection_url)
+def mongo(contractAddress, block):  
+    client = pymongo.MongoClient('mongodb+srv://sourabh:sourabh@cluster0.il3sa.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
     Database = client.get_database('myFirstDB')
     blocksTable = Database.blocksTable
-    queryObject = {
-    'contractAddress': contractAddress,
-    'block': block
-    }
     if blocksTable.find_one({'contractAddress': contractAddress}) == None:
         print("inserted")
-        blocksTable.insert_one(queryObject)
+        blocksTable.insert_one({
+        'contractAddress': contractAddress,
+        'block': block
+    })
     
     gc.collect()
 
@@ -39,8 +37,7 @@ def fetchBlocks(block):
                 #return contractAddress
         del web3
         del block
-
-
+        gc.collect()
 
 #inspect_serializability(fetchBlocks, name="contract")
 @profile
@@ -60,6 +57,8 @@ def start():
     {} nodes in total
     {} CPU resources in total
 '''.format(len(ray.nodes()), ray.cluster_resources()['CPU']))
+
+
     block= web3.eth.get_block('latest').number + 1
     del web3
     del infura_url
