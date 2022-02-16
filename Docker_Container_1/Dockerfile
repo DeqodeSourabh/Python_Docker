@@ -1,8 +1,9 @@
 #Deriving the latest base image
-FROM python:latest
+FROM python:3.8
 
 RUN pip install web3
-RUN pip install -U ray
+RUN pip install -U ray==1.9.2
+RUN pip install pymongo==4.0.1
 
 #Labels as key value pair
 LABEL Maintainer="sourabh.a1"
